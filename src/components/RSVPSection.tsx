@@ -12,16 +12,44 @@ export function RSVPSection() {
     guests: "1",
     message: "",
   });
+
+  const [isSending, setIsSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: "", attendance: "", guests: "1", message: "" });
-    }, 3000);
+    setIsSending(true);
+
+    try {
+      // Ganti URL ini dengan API URL dari SheetDB Anda
+      const API_URL = "https://sheetdb.io/api/v1/7katr5pf8azps";
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: [formData], // SheetDB mengharuskan data dibungkus dalam array
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        // Reset form setelah 3 detik
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({ name: "", attendance: "", guests: "1", message: "" });
+        }, 5000);
+      } else {
+        alert("Gagal mengirim data. Silakan coba lagi.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan koneksi.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -131,9 +159,7 @@ export function RSVPSection() {
               )}
 
               <div>
-                <label className="block text-gray-700 mb-2">
-                  Ucapan & Doa
-                </label>
+                <label className="block text-gray-700 mb-2">Ucapan & Doa</label>
                 <Textarea
                   value={formData.message}
                   onChange={(e) =>
@@ -146,10 +172,10 @@ export function RSVPSection() {
 
               <Button
                 type="submit"
-                className="w-full bg-sage-600 hover:bg-sage-700 text-white py-6 text-lg"
-                disabled={!formData.name || !formData.attendance}
+                disabled={isSending || !formData.name || !formData.attendance}
+                className="w-full bg-sage-600 disabled:bg-gray-400"
               >
-                Kirim Konfirmasi
+                {isSending ? "Tunggu Sebentar..." : "Kirim Konfirmasi"}
               </Button>
             </form>
           )}

@@ -24,7 +24,7 @@ export function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fdfbf7]">
       {/* 1. Background Texture Utama (Opsional: Tekstur Kertas) */}
       <div
-        className="absolute inset-0 opacity-30 pointer-events-none"
+        className="absolute inset-0 opacity-30 pointer-events-none bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url(${backround})`,
         }}
